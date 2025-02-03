@@ -1,0 +1,10 @@
+<div class="bg-white rounded-lg shadow-md overflow-hidden">
+    <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-full h-48 object-cover">
+    <div class="p-4">
+        <h3 class="font-semibold text-lg mb-2">{{ product.name }}</h3>
+        <p class="text-green-600 font-bold">${{ product.price|floatformat:2 }}</p>
+    </div>
+    <div class="px-4 pb-4">
+        <a href="{% url 'add_to_cart' product.id %}" class="block w-full bg-green-600 text-white text-center py-2 rounded-md hover:bg-green-700 transition-colors">Add to Cart</a>
+    </div>
+</div>

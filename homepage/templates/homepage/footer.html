@@ -1,0 +1,31 @@
+<footer class="bg-green-800 text-white">
+    <div class="container mx-auto px-4 py-8 flex flex-wrap justify-between">
+        <div class="w-full md:w-1/4 mb-4 md:mb-0">
+            <h2 class="text-xl font-bold mb-4">AgriMarket</h2>
+            <p class="text-sm">Connecting farmers and consumers for fresher produce and fairer prices.</p>
+        </div>
+        <div class="w-full md:w-1/4 mb-4 md:mb-0">
+            <h3 class="text-lg font-semibold mb-2">Quick Links</h3>
+            <ul class="text-sm">
+                <li><a href="{% url 'products' %}" class="hover:text-green-200">Products</a></li>
+                <li><a href="{% url 'farmers' %}" class="hover:text-green-200">Farmers</a></li>
+                <li><a href="{% url 'about' %}" class="hover:text-green-200">About Us</a></li>
+                <li><a href="{% url 'contact' %}" class="hover:text-green-200">Contact</a></li>
+            </ul>
+        </div>
+        <div class="w-full md:w-1/4 mb-4 md:mb-0">
+            <h3 class="text-lg font-semibold mb-2">Contact Us</h3>
+            <p class="text-sm">Email: info@agrimarket.com</p>
+            <p class="text-sm">Phone: (123) 456-7890</p>
+        </div>
+        <div class="w-full md:w-1/4">
+            <h3 class="text-lg font-semibold mb-2">Follow Us</h3>
+            <div class="flex space-x-4">
+                <!-- Add social media icons here -->
+            </div>
+        </div>
+    </div>
+    <div class="container mx-auto px-4 py-4 text-center text-sm">
+        © {% now "Y" %} AgriMarket. All rights reserved.
+    </div>
+</footer>

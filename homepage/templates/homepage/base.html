@@ -1,0 +1,38 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}AgriMarket - Your Online Agricultural Marketplace{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="flex flex-col min-h-screen">
+    {% include 'homepage/header.html' %}
+    
+    <main class="flex-grow container mx-auto px-4 py-8">
+        <div class="mb-8">
+            <h2 class="text-2xl font-semibold mb-4">Explore Our Categories</h2>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                {% include 'homepage/category_card.html' with icon="🌱" title="Seeds" %}
+                {% include 'homepage/category_card.html' with icon="🚜" title="Farming Tools" %}
+                {% include 'homepage/category_card.html' with icon="🧪" title="Fertilizers" %}
+                {% include 'homepage/category_card.html' with icon="🌾" title="Crops" %}
+                {% include 'homepage/category_card.html' with icon="🐄" title="Livestock" %}
+                {% include 'homepage/category_card.html' with icon="🌿" title="Organic Products" %}
+                {% include 'homepage/category_card.html' with icon="🔧" title="Equipment" %}
+                {% include 'homepage/category_card.html' with icon="📦" title="Supplies" %}
+            </div>
+        </div>
+        
+        {% block content %}{% endblock %}
+        
+        {% include 'homepage/suggested_products.html' %}
+    </main>
+    
+    {% include 'homepage/footer.html' %}
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
