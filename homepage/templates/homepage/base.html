@@ -5,34 +5,94 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}AgriMarket - Your Online Agricultural Marketplace{% endblock %}</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.8.1/flowbite.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     {% block extra_css %}{% endblock %}
 </head>
 <body class="flex flex-col min-h-screen">
-    {% include 'homepage/header.html' %}
-    
-    <main class="flex-grow container mx-auto px-4 py-8">
-        <div class="mb-8">
-            <h2 class="text-2xl font-semibold mb-4">Explore Our Categories</h2>
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {% include 'homepage/category_card.html' with icon="🌱" title="Seeds" %}
-                {% include 'homepage/category_card.html' with icon="🚜" title="Farming Tools" %}
-                {% include 'homepage/category_card.html' with icon="🧪" title="Fertilizers" %}
-                {% include 'homepage/category_card.html' with icon="🌾" title="Crops" %}
-                {% include 'homepage/category_card.html' with icon="🐄" title="Livestock" %}
-                {% include 'homepage/category_card.html' with icon="🌿" title="Organic Products" %}
-                {% include 'homepage/category_card.html' with icon="🔧" title="Equipment" %}
-                {% include 'homepage/category_card.html' with icon="📦" title="Supplies" %}
-            </div>
+{% include 'homepage/header.html' %}
+
+<main class="flex-grow container mx-auto px-4 py-8">
+
+    <!-- Tailwind CSS Carousel -->
+    <div class="relative mb-8 overflow-hidden rounded-lg" x-data="{
+        activeSlide: 0,
+        slides: [
+            { image: '{% static 'assets/main2.jpg' %}', title: 'High-Quality Seeds', description: 'Discover the best seeds for your farm.' },
+            { image: '{% static 'assets/main.jpg' %}', title: 'Fresh Organic Produce', description: 'Get fresh and organic products directly from farmers.' },
+            { image: '{% static 'assets/organic.jpg' %}', title: 'Eco-Friendly Farming', description: 'Explore sustainable farming practices.' },
+            { image: '{% static 'assets/main2.jpg' %}', title: 'Modern Farming Tools', description: 'Upgrade your farm with the latest tools.' }
+        ],
+        startCarousel() {
+            setInterval(() => {
+                this.activeSlide = (this.activeSlide + 1) % this.slides.length;
+            }, 3000); // Change slide every 3 seconds
+        }
+    }" x-init="startCarousel">
+        <!-- Slides -->
+        <div class="relative h-64 overflow-hidden">
+            <template x-for="(slide, index) in slides" :key="index">
+                <div
+                    x-show="activeSlide === index"
+                    x-transition:enter="transition ease-out duration-700"
+                    x-transition:enter-start="opacity-0 transform translate-x-full"
+                    x-transition:enter-end="opacity-100 transform translate-x-0"
+                    x-transition:leave="transition ease-in duration-700"
+                    x-transition:leave-start="opacity-100 transform translate-x-0"
+                    x-transition:leave-end="opacity-0 transform -translate-x-full"
+                    class="absolute inset-0 w-full h-64"
+                >
+                    <img :src="slide.image" class="w-full h-64 object-cover" :alt="`Carousel Image ${index + 1}`">
+                    <!-- Caption -->
+                    <div class="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white p-4">
+                        <h3 class="text-lg font-semibold" x-text="slide.title"></h3>
+                        <p class="text-sm" x-text="slide.description"></p>
+                    </div>
+                </div>
+            </template>
         </div>
-        
-        {% block content %}{% endblock %}
-        
-        {% include 'homepage/suggested_products.html' %}
-    </main>
-    
-    {% include 'homepage/footer.html' %}
-    
-    {% block extra_js %}{% endblock %}
+
+        <!-- Navigation Buttons -->
+        <button class="absolute top-1/2 left-2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full" @click="activeSlide = activeSlide === 0 ? slides.length - 1 : activeSlide - 1">
+            &larr;
+        </button>
+        <button class="absolute top-1/2 right-2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full" @click="activeSlide = activeSlide === slides.length - 1 ? 0 : activeSlide + 1">
+            &rarr;
+        </button>
+
+        <!-- Pagination Dots -->
+        <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
+            <template x-for="(slide, index) in slides" :key="index">
+                <button class="w-3 h-3 rounded-full bg-white bg-opacity-50" :class="{ 'bg-opacity-100': activeSlide === index }" @click="activeSlide = index"></button>
+            </template>
+        </div>
+    </div>
+
+    <!-- Explore Categories -->
+    <div class="mb-8">
+        <h2 class="text-2xl font-semibold mb-4">Explore Our Categories</h2>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {% include 'homepage/category_card.html' with image="seeds.jpg" title="Seeds" %}
+            {% include 'homepage/category_card.html' with image="tools.jpg" title="Farming Tools" %}
+            {% include 'homepage/category_card.html' with image="fertilizer.jpg" title="Fertilizers" %}
+            {% include 'homepage/category_card.html' with image="main.jpg" title="Crops" %}
+            {% include 'homepage/category_card.html' with image="livestock.jpg" title="Livestock" %}
+            {% include 'homepage/category_card.html' with image="organic.jpg" title="Organic Products" %}
+            {% include 'homepage/category_card.html' with image="equipment.png" title="Equipment" %}
+            {% include 'homepage/category_card.html' with image="supplies.png" title="Supplies" %}
+        </div>
+    </div>
+
+    {% block content %}{% endblock %}
+
+    {% include 'homepage/suggested_products.html' %}
+</main>
+
+{% include 'homepage/footer.html' %}
+
+<!-- Alpine.js for Interactivity -->
+<script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+
+{% block extra_js %}{% endblock %}
 </body>
 </html>

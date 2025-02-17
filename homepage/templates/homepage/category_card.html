@@ -1,8 +1,9 @@
-<a href="{% url 'category'  %}" class="block">
-    <div class="bg-white rounded-lg shadow-md hover:bg-green-50 transition-colors">
-        <div class="flex flex-col items-center justify-center p-4">
-            <span class="text-4xl mb-2">{{ icon }}</span>
-            <h3 class="font-semibold text-center">{{ title }}</h3>
+{% load static %}
+<a href="{% url 'category_page' title %}" class="block">
+    <div class="bg-white shadow-md rounded-lg overflow-hidden">
+        <img src="{% static 'assets/' %}{{ image }}" alt="{{ title }}" class="w-full h-32 object-cover">
+        <div class="p-4">
+            <h3 class="text-lg font-semibold">{{ title }}</h3>
         </div>
     </div>
-{#</a>#}
+</a>
