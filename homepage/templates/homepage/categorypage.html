@@ -1,0 +1,35 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.8.1/flowbite.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+{% include 'homepage/header.html' %}
+<div class="container mx-auto px-4 py-8">
+    <!-- Category Name -->
+    <h1 class="text-3xl font-semibold text-center mb-6">{{ category_name }}</h1>
+
+    <!-- Display Products using category_card.html -->
+    {% if products %}
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {% for product in products %}
+                {% if product.image %}
+    {% include 'homepage/product_card.html' with image=product.image.url title=product.name %}
+{% else %}
+    {% include 'homepage/product_card.html' with image='no-image.jpg' title=product.name %}
+{% endif %}
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="text-center text-gray-500">No products found in this category.</p>
+    {% endif %}
+</div>
+</body>
+</html>
+
+
+
