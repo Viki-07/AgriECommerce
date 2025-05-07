@@ -7,6 +7,53 @@
     <title>{% block title %}AgriMarket - Your Online Agricultural Marketplace{% endblock %}</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.8.1/flowbite.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        /* Hide scrollbar but keep functionality */
+        .custom-scrollbar::-webkit-scrollbar {
+            display: none; /* Chrome, Safari, Opera */
+        }
+        
+        /* Hide scrollbar for Firefox */
+        .custom-scrollbar {
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none; /* IE and Edge */
+        }
+        
+        /* Scroll indicators */
+        .scroll-container {
+            position: relative;
+        }
+        
+        .scroll-indicator {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 40px;
+            height: 40px;
+            background-color: rgba(40, 167, 69, 0.8);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 10;
+            transition: all 0.3s ease;
+        }
+        
+        .scroll-indicator:hover {
+            background-color: rgba(40, 167, 69, 1);
+            transform: translateY(-50%) scale(1.1);
+        }
+        
+        .scroll-left {
+            left: 20px;
+        }
+        
+        .scroll-right {
+            right: 20px;
+        }
+    </style>
     {% block extra_css %}{% endblock %}
 </head>
 <body class="flex flex-col min-h-screen">
@@ -71,27 +118,58 @@
     <!-- Explore Categories -->
     <div class="mb-8">
         <h2 class="text-2xl font-semibold mb-4">Explore Our Categories</h2>
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {% include 'homepage/category_card.html' with image="seeds.jpg" title="Seeds" %}
-            {% include 'homepage/category_card.html' with image="tools.jpg" title="Farming Tools" %}
-            {% include 'homepage/category_card.html' with image="fertilizer.jpg" title="Fertilizers" %}
-            {% include 'homepage/category_card.html' with image="main.jpg" title="Crops" %}
-            {% include 'homepage/category_card.html' with image="livestock.jpg" title="Livestock" %}
-            {% include 'homepage/category_card.html' with image="organic.jpg" title="Organic Products" %}
-            {% include 'homepage/category_card.html' with image="equipment.png" title="Equipment" %}
-            {% include 'homepage/category_card.html' with image="supplies.png" title="Supplies" %}
+        <div class="scroll-container">
+            <div class="overflow-x-auto custom-scrollbar pb-4" id="categories-scroll">
+                <div class="flex space-x-3 min-w-max">
+                    {% include 'homepage/category_card.html' with image="seeds.jpg" title="Seeds" %}
+                    {% include 'homepage/category_card.html' with image="tools.jpg" title="Farming Tools" %}
+                    {% include 'homepage/category_card.html' with image="fertilizer.jpg" title="Fertilizers" %}
+                    {% include 'homepage/category_card.html' with image="main.jpg" title="Crops" %}
+                    {% include 'homepage/category_card.html' with image="livestock.jpg" title="Livestock" %}
+                    {% include 'homepage/category_card.html' with image="organic.jpg" title="Organic Products" %}
+                    {% include 'homepage/category_card.html' with image="equipment.png" title="Equipment" %}
+                    {% include 'homepage/category_card.html' with image="supplies.png" title="Supplies" %}
+                </div>
+            </div>
+            <div class="scroll-indicator scroll-left" onclick="scrollCategories('left')">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                </svg>
+            </div>
+            <div class="scroll-indicator scroll-right" onclick="scrollCategories('right')">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                </svg>
+            </div>
         </div>
     </div>
 
     {% block content %}{% endblock %}
-
-    {% include 'homepage/suggested_products.html' %}
 </main>
 
 {% include 'homepage/footer.html' %}
 
 <!-- Alpine.js for Interactivity -->
 <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+
+<script>
+    function scrollCategories(direction) {
+        const container = document.getElementById('categories-scroll');
+        const scrollAmount = 300; // Adjust this value to control scroll distance
+        
+        if (direction === 'left') {
+            container.scrollBy({
+                left: -scrollAmount,
+                behavior: 'smooth'
+            });
+        } else {
+            container.scrollBy({
+                left: scrollAmount,
+                behavior: 'smooth'
+            });
+        }
+    }
+</script>
 
 {% block extra_js %}{% endblock %}
 </body>

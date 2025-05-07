@@ -5,6 +5,9 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login, authenticate
 from .forms import CustomUserCreationForm  # If you have custom forms
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
+from homepage.models import Cart, Order
 
 
 # Register view
@@ -42,5 +45,34 @@ def login_view(request):
 
 
 # Profile view
+@login_required
 def profile(request):
-    return render(request, 'users/profile.html')
+    # Get user's orders
+    orders = Order.objects.filter(user=request.user).order_by('-created_at')
+    
+    # Get user's cart items
+    cart_items = Cart.objects.filter(user=request.user)
+    
+    return render(request, 'users/profile.html', {
+        'orders': orders,
+        'cart_items': cart_items
+    })
+
+@login_required
+def edit_profile(request):
+    if request.method == 'POST':
+        # Update user information
+        user = request.user
+        user.first_name = request.POST.get('first_name', '')
+        user.last_name = request.POST.get('last_name', '')
+        user.email = request.POST.get('email', '')
+        
+        # Handle profile image upload if provided
+        if 'profile_image' in request.FILES:
+            user.profile_image = request.FILES['profile_image']
+        
+        user.save()
+        messages.success(request, 'Profile updated successfully!')
+        return redirect('profile')
+    
+    return render(request, 'users/edit_profile.html')

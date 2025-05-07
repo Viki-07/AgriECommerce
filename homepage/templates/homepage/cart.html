@@ -1,3 +1,4 @@
+{% load custom_filters %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,46 +6,326 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Your Cart</title>
     <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-100 font-sans">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    {% if razorpay_key_id %}
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    {% endif %}
+    <style>
+        .cart-item {
+            transition: all 0.3s ease;
+            border: 1px solid #e5e7eb;
+        }
+        
+        .cart-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
 
-    <div class="container mx-auto my-8 p-6 bg-white shadow-md rounded-lg">
-        <h2 class="text-3xl font-bold mb-4 text-center">Your Shopping Cart</h2>
+        .quantity-btn {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.2s ease;
+        }
+
+        .quantity-btn:hover {
+            background-color: #f3f4f6;
+        }
+
+        .remove-btn {
+            transition: all 0.2s ease;
+        }
+
+        .remove-btn:hover {
+            transform: scale(1.1);
+            color: #dc2626;
+        }
+
+        .checkout-btn {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            transition: all 0.3s ease;
+        }
+
+        .checkout-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.2);
+        }
+
+        .empty-cart {
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans">
+{% include 'homepage/header.html' %}
+
+<div class="container mx-auto my-8 p-6 flex flex-col md:flex-row md:items-start md:space-x-8">
+    <!-- Cart Items - Left Section -->
+    <div class="md:w-2/3 bg-white p-6 shadow-sm rounded-lg">
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-3xl font-bold text-gray-800">Your Shopping Cart</h2>
+            <span class="text-gray-500">{{ cart_items|length }} items</span>
+        </div>
 
         {% if cart_items %}
-            <table class="w-full border-collapse bg-white shadow-md rounded-lg overflow-hidden">
-                <thead class="bg-gray-200">
-                    <tr class="border-b">
-                        <th class="text-left p-4">Product</th>
-                        <th class="text-left p-4">Quantity</th>
-                        <th class="text-left p-4">Price</th>
-                        <th class="text-left p-4">Total</th>
-                        <th class="text-left p-4">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for item in cart_items %}
-                    <tr class="border-b hover:bg-gray-100">
-                        <td class="p-4 font-semibold">{{ item.ref_product.name }}</td>
-                        <td class="p-4">{{ item.quantity }}</td>
-                        <td class="p-4 text-green-600 font-bold">${{ item.ref_product.price|floatformat:2 }}</td>
-                        <td class="p-4 text-green-700 font-bold">${{ item.total_price|floatformat:2 }}</td>
-                        <td class="p-4">
-                            <a href="{% url 'remove_from_cart' item.id %}" class="text-red-600 hover:underline">Remove</a>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+            <div class="space-y-4">
+                {% for item in cart_items %}
+                    <div class="cart-item bg-white rounded-lg p-4 flex flex-col md:flex-row items-center justify-between">
+                        <!-- Product Image and Name -->
+                        <a href="{% url 'product_detail' item.ref_product.id %}"
+                           class="flex items-center space-x-4 mb-4 md:mb-0 group">
+                            <div class="relative">
+                                {% if item.ref_product.image %}
+                                    <img src="{{ item.ref_product.image.url }}" alt="{{ item.ref_product.name }}"
+                                         class="w-24 h-24 object-cover rounded-lg group-hover:opacity-90 transition">
+                                {% else %}
+                                    <div class="w-24 h-24 flex items-center justify-center bg-gray-100 text-gray-400 rounded-lg">
+                                        <i class="fas fa-image text-2xl"></i>
+                                    </div>
+                                {% endif %}
+                                <span class="absolute top-2 right-2 bg-green-100 text-green-800 text-xs font-medium px-2 py-1 rounded-full">
+                                    {{ item.ref_product.category }}
+                                </span>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-lg text-gray-800 group-hover:text-green-600 transition">{{ item.ref_product.name }}</h3>
+                                <p class="text-gray-600">₹{{ item.ref_product.price|floatformat:2 }}</p>
+                                <p class="text-sm text-gray-500">In Stock: {{ item.ref_product.stock }}</p>
+                            </div>
+                        </a>
 
-            <div class="mt-6 text-right">
-                <p class="text-lg font-bold text-gray-800">Total: <span class="text-green-600">${{ total_price|floatformat:2 }}</span></p>
-                <button class="bg-green-600 text-white px-6 py-3 rounded-md mt-4 hover:bg-green-700 transition">Proceed to Checkout</button>
+                        <!-- Quantity and Price Section -->
+                        <div class="flex items-center space-x-6">
+                            <!-- Quantity Adjustment -->
+                            <div class="flex items-center space-x-2 bg-gray-50 rounded-full p-1">
+                                <button class="quantity-btn text-gray-600 hover:text-gray-800"
+                                        onclick="updateQuantity({{ item.id }}, -1)">
+                                    <i class="fas fa-minus"></i>
+                                </button>
+                                <span class="text-lg font-semibold w-8 text-center" id="quantity-{{ item.id }}">{{ item.quantity }}</span>
+                                <button class="quantity-btn text-gray-600 hover:text-gray-800"
+                                        onclick="updateQuantity({{ item.id }}, 1)">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+
+                            <!-- Total Price -->
+                            <div class="text-right">
+                                <p class="text-green-600 font-bold text-lg" id="total-price-{{ item.id }}">
+                                    ₹{{ item.total_price|floatformat:2 }}
+                                </p>
+                                <p class="text-sm text-gray-500">₹{{ item.ref_product.price|floatformat:2 }} each</p>
+                            </div>
+
+                            <!-- Remove Button -->
+                            <a href="{% url 'remove_from_cart' item.id %}"
+                               class="remove-btn text-gray-400 hover:text-red-500 p-2">
+                                <i class="fas fa-trash-alt"></i>
+                            </a>
+                        </div>
+                    </div>
+                {% endfor %}
             </div>
         {% else %}
-            <p class="text-center text-gray-600 text-lg">Your cart is empty.</p>
+            <div class="empty-cart text-center py-12">
+                <div class="w-24 h-24 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
+                    <i class="fas fa-shopping-cart text-4xl text-gray-400"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-700 mb-2">Your cart is empty</h3>
+                <p class="text-gray-500 mb-6">Looks like you haven't added any items to your cart yet.</p>
+                <a href="{% url 'shop' %}" class="inline-block bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition">
+                    Continue Shopping
+                </a>
+            </div>
         {% endif %}
     </div>
+
+    <!-- Payment Summary - Right Section -->
+    <div class="w-full md:w-1/3 md:ml-8 bg-white shadow-sm p-6 rounded-lg">
+        <h3 class="text-2xl font-bold text-gray-800 mb-6">Order Summary</h3>
+        
+        <div class="space-y-4 mb-6">
+            <div class="flex justify-between text-gray-600">
+                <span>Subtotal</span>
+                <span id="cart-total">₹{{ total_price|floatformat:2 }}</span>
+            </div>
+            <div class="flex justify-between text-gray-600">
+                <span>Tax (18%)</span>
+                <span id="tax-amount">₹{{ total_price|mul:0.18|floatformat:2 }}</span>
+            </div>
+            <div class="border-t border-gray-200 pt-4">
+                <div class="flex justify-between font-bold text-lg">
+                    <span>Total</span>
+                    <span class="text-green-600" id="grand-total">₹{{ total_price|mul:1.18|floatformat:2 }}</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex flex-col mt-4 space-y-3">
+            {% if cart_items %}
+                <button onclick="initiatePayment()" class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors duration-300 w-full">
+                    Proceed to Checkout
+                </button>
+            {% else %}
+                <p class="text-gray-500 text-center">Your cart is empty</p>
+            {% endif %}
+        </div>
+
+        <div class="mt-4 text-center text-sm text-gray-500">
+            <p>Free shipping on orders over ₹1000</p>
+            <p class="mt-1">Secure checkout</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    function updateQuantity(itemId, change) {
+        let quantityElement = document.getElementById(`quantity-${itemId}`);
+        let currentQuantity = parseInt(quantityElement.innerText);
+
+        // Prevent negative quantities
+        if (currentQuantity === 1 && change === -1) {
+            return;
+        }
+
+        fetch(`/update_cart/${itemId}/${change}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Update item quantity
+                    quantityElement.innerText = data.new_quantity;
+
+                    // Update item total price
+                    let totalPriceElement = document.getElementById(`total-price-${itemId}`);
+                    if (totalPriceElement) {
+                        totalPriceElement.innerText = `₹${data.new_total_price}`;
+                    }
+
+                    // Update cart total
+                    let cartTotalElement = document.getElementById('cart-total');
+                    if (cartTotalElement) {
+                        cartTotalElement.innerText = `₹${data.cart_total}`;
+                    }
+
+                    // Update payment summary (taxes, grand total, etc.)
+                    updatePaymentSummary(data.cart_total);
+                } else if (data.error === "Reached max stock limit") {
+                    alert("You've reached the maximum stock limit!");
+                }
+            })
+            .catch(error => console.error('Error:', error));
+    }
+
+    function updatePaymentSummary(cartTotal) {
+        let total = parseFloat(cartTotal);
+        let taxRate = 0.18;
+        let taxAmount = total * taxRate;
+        let grandTotal = total + taxAmount;
+
+        let taxElement = document.getElementById('tax-amount');
+        let grandTotalElement = document.getElementById('grand-total');
+
+        if (taxElement && grandTotalElement) {
+            taxElement.innerText = `₹${taxAmount.toFixed(2)}`;
+            grandTotalElement.innerText = `₹${grandTotal.toFixed(2)}`;
+        }
+    }
+
+    {% if razorpay_key_id %}
+    function initiatePayment() {
+        const amount = parseFloat(document.getElementById('grand-total').innerText.replace('₹', '')) * 100; // Convert to paise
+        
+        // Create order on the server
+        fetch('/create-order/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify({
+                amount: amount
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                // Display detailed error message if available
+                if (data.details) {
+                    alert(data.error + '\n\n' + data.details);
+                } else {
+                    alert(data.error);
+                }
+                return;
+            }
+            
+            const options = {
+                key: '{{ razorpay_key_id }}',
+                amount: data.amount,
+                currency: data.currency,
+                name: 'AgriMarket',
+                description: 'Your Order Payment',
+                order_id: data.order_id,
+                handler: function(response) {
+                    // Handle successful payment
+                    handlePaymentSuccess(response);
+                },
+                prefill: {
+                    name: '{{ user.get_full_name }}',
+                    email: '{{ user.email }}'
+                },
+                theme: {
+                    color: '#10B981'
+                }
+            };
+            
+            const rzp = new Razorpay(options);
+            rzp.open();
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Something went wrong. Please try again.');
+        });
+    }
+
+    function handlePaymentSuccess(response) {
+        // Send payment details to server for verification
+        fetch('/payment-callback/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify(response)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                window.location.href = `/order-success/${data.order_id}/`;
+            } else {
+                alert('Payment verification failed. Please contact support.');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Payment verification failed. Please contact support.');
+        });
+    }
+    {% endif %}
+</script>
 
 </body>
 </html>

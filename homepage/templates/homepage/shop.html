@@ -1,0 +1,577 @@
+{% extends 'homepage/base.html' %}
+{% load static %}
+
+{% block title %}Shop - AgriMarket{% endblock %}
+
+{% block extra_css %}
+<style>
+    .product-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-top: 1.5rem;
+    }
+    
+    .product-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .product-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    
+    .category-badge {
+        position: absolute;
+        top: 0.5rem;
+        right: 0.5rem;
+        background-color: rgba(40, 167, 69, 0.9);
+        color: white;
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.25rem;
+        font-size: 0.75rem;
+    }
+
+    .filter-dropdown {
+        position: relative;
+        display: inline-block;
+    }
+
+    .filter-dropdown-content {
+        display: none;
+        position: absolute;
+        right: 0;
+        background-color: white;
+        min-width: 300px;
+        box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+        z-index: 1;
+        border-radius: 0.5rem;
+        padding: 1rem;
+    }
+
+    .filter-dropdown:hover .filter-dropdown-content {
+        display: block;
+    }
+
+    .filter-option {
+        padding: 0.5rem 1rem;
+        display: block;
+        color: #333;
+        text-decoration: none;
+        transition: background-color 0.2s;
+    }
+
+    .filter-option:hover {
+        background-color: #f0f0f0;
+    }
+
+    .price-slider {
+        width: 100%;
+        margin: 1rem 0;
+    }
+
+    .price-range {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 0.5rem;
+    }
+
+    .category-checkbox {
+        margin-right: 0.5rem;
+    }
+
+    .apply-filters {
+        margin-top: 1rem;
+        width: 100%;
+        padding: 0.5rem;
+        background-color: #28a745;
+        color: white;
+        border: none;
+        border-radius: 0.25rem;
+        cursor: pointer;
+    }
+
+    .apply-filters:hover {
+        background-color: #218838;
+    }
+
+    .pagination {
+        display: flex;
+        justify-content: center;
+        margin-top: 2rem;
+        gap: 0.5rem;
+    }
+
+    .pagination a, .pagination span {
+        padding: 0.5rem 1rem;
+        border: 1px solid #e5e7eb;
+        border-radius: 0.25rem;
+        color: #4b5563;
+        text-decoration: none;
+        transition: all 0.2s;
+    }
+
+    .pagination a:hover {
+        background-color: #f3f4f6;
+        border-color: #d1d5db;
+    }
+
+    .pagination .current {
+        background-color: #10b981;
+        color: white;
+        border-color: #10b981;
+    }
+
+    .pagination .disabled {
+        color: #9ca3af;
+        pointer-events: none;
+    }
+
+    .scroll-smooth {
+        scroll-behavior: smooth;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4">
+    <!-- You Might Also Like Section -->
+    {% if recommended_products %}
+    <div class="mb-8">
+        <h2 class="text-2xl font-bold text-gray-800 mb-6">You Might Also Like</h2>
+        <div class="product-grid">
+            {% for product in recommended_products %}
+            <div class="product-card bg-white rounded-lg shadow-md overflow-hidden relative">
+                <a href="{% url 'product_detail' product.id %}" class="block">
+                    {% if product.image %}
+                        <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-full h-48 object-cover">
+                    {% else %}
+                        <div class="w-full h-48 bg-gray-200 flex items-center justify-center">
+                            <span class="text-gray-500">No Image Available</span>
+                        </div>
+                    {% endif %}
+                    
+                    <span class="category-badge">{{ product.category }}</span>
+                    
+                    <div class="p-4">
+                        <h3 class="font-semibold text-lg mb-1 text-gray-800">{{ product.name }}</h3>
+                        <p class="text-green-600 font-bold text-lg mb-2">₹{{ product.price|floatformat:2 }}</p>
+                        
+                        {% if product.stock > 0 %}
+                            <p class="text-sm text-gray-500">In Stock: {{ product.stock }}</p>
+                        {% else %}
+                            <p class="text-red-500 font-bold">Out of Stock</p>
+                        {% endif %}
+                    </div>
+                </a>
+                
+                {% if product.stock > 0 %}
+                <div class="p-4 border-t border-gray-100">
+                    <form action="{% url 'add_to_cart' product.id %}" method="post" class="flex items-center gap-2">
+                        {% csrf_token %}
+                        <input type="number" name="quantity" value="1" min="1" max="{{ product.stock }}" 
+                               class="w-16 text-center border rounded-md py-1">
+                        <button type="submit" class="flex-1 bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors">
+                            Add to Cart
+                        </button>
+                    </form>
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Title Section with Filter -->
+    <div class="mb-8 flex justify-between items-center" id="main-products-section">
+        <h2 class="text-3xl font-bold text-gray-800">Products</h2>
+        <div class="filter-dropdown">
+            <button class="flex items-center space-x-2 text-gray-600 hover:text-gray-800">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                </svg>
+                <span>Filter</span>
+            </button>
+            <div class="filter-dropdown-content">
+                <form id="filter-form" method="get">
+                    <div class="mb-4">
+                        <h3 class="font-semibold text-gray-700 mb-2">Categories</h3>
+                        <label class="filter-option flex items-center">
+                            <input type="checkbox" name="category" value="Seeds" class="category-checkbox">
+                            Seeds
+                        </label>
+                        <label class="filter-option flex items-center">
+                            <input type="checkbox" name="category" value="Farming Tools" class="category-checkbox">
+                            Farming Tools
+                        </label>
+                        <label class="filter-option flex items-center">
+                            <input type="checkbox" name="category" value="Fertilizers" class="category-checkbox">
+                            Fertilizers
+                        </label>
+                        <label class="filter-option flex items-center">
+                            <input type="checkbox" name="category" value="Livestock" class="category-checkbox">
+                            Livestock
+                        </label>
+                        <label class="filter-option flex items-center">
+                            <input type="checkbox" name="category" value="Organic Products" class="category-checkbox">
+                            Organic Products
+                        </label>
+                        <label class="filter-option flex items-center">
+                            <input type="checkbox" name="category" value="Equipment" class="category-checkbox">
+                            Equipment
+                        </label>
+                        <label class="filter-option flex items-center">
+                            <input type="checkbox" name="category" value="Supplies" class="category-checkbox">
+                            Supplies
+                        </label>
+                    </div>
+                    <div class="mb-4">
+                        <h3 class="font-semibold text-gray-700 mb-2">Price Range</h3>
+                        <input type="range" class="price-slider" min="0" max="10000" step="100" id="price-slider">
+                        <div class="price-range">
+                            <span id="min-price">₹0</span>
+                            <span id="max-price">₹10000</span>
+                        </div>
+                        <input type="hidden" name="min_price" id="min-price-input">
+                        <input type="hidden" name="max_price" id="max-price-input">
+                    </div>
+                    <div class="mb-4">
+                        <h3 class="font-semibold text-gray-700 mb-2">Sort By</h3>
+                        <select name="sort" class="w-full border rounded-md p-2">
+                            <option value="newest">Newest First</option>
+                            <option value="price_low">Price: Low to High</option>
+                            <option value="price_high">Price: High to Low</option>
+                            <option value="name">Name: A to Z</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="apply-filters">Apply Filters</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Products Grid -->
+    <div class="product-grid" id="product-grid">
+        {% for product in products %}
+        <div class="product-card bg-white rounded-lg shadow-md overflow-hidden relative">
+            <a href="{% url 'product_detail' product.id %}" class="block">
+                {% if product.image %}
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-full h-48 object-cover">
+                {% else %}
+                    <div class="w-full h-48 bg-gray-200 flex items-center justify-center">
+                        <span class="text-gray-500">No Image Available</span>
+                    </div>
+                {% endif %}
+                
+                <span class="category-badge">{{ product.category }}</span>
+                
+                <div class="p-4">
+                    <h3 class="font-semibold text-lg mb-1 text-gray-800">{{ product.name }}</h3>
+                    <p class="text-green-600 font-bold text-lg mb-2">₹{{ product.price|floatformat:2 }}</p>
+                    
+                    {% if product.stock > 0 %}
+                        <p class="text-sm text-gray-500">In Stock: {{ product.stock }}</p>
+                    {% else %}
+                        <p class="text-red-500 font-bold">Out of Stock</p>
+                    {% endif %}
+                </div>
+            </a>
+            
+            {% if product.stock > 0 %}
+            <div class="p-4 border-t border-gray-100">
+                <form action="{% url 'add_to_cart' product.id %}" method="post" class="flex items-center gap-2">
+                    {% csrf_token %}
+                    <input type="number" name="quantity" value="1" min="1" max="{{ product.stock }}" 
+                           class="w-16 text-center border rounded-md py-1">
+                    <button type="submit" class="flex-1 bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors">
+                        Add to Cart
+                    </button>
+                </form>
+            </div>
+            {% endif %}
+        </div>
+        {% empty %}
+        <div class="col-span-full text-center py-8">
+            <p class="text-gray-500 text-lg">No products found.</p>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    {% if paginator.num_pages > 1 %}
+    <div class="pagination">
+        {% if page_obj.has_previous %}
+            <a href="?page=1" class="page-link">&laquo; First</a>
+            <a href="?page={{ page_obj.previous_page_number }}" class="page-link">Previous</a>
+        {% endif %}
+
+        {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+                <span class="current">{{ num }}</span>
+            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                <a href="?page={{ num }}" class="page-link">{{ num }}</a>
+            {% endif %}
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}" class="page-link">Next</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}" class="page-link">Last &raquo;</a>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Function to scroll to products section
+    function scrollToProducts() {
+        const productsSection = document.getElementById('main-products-section');
+        if (productsSection) {
+            productsSection.scrollIntoView({ behavior: 'smooth' });
+        }
+    }
+
+    // Check for hash on page load and after a short delay
+    function checkHashAndScroll() {
+        if (window.location.hash === '#products') {
+            scrollToProducts();
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initial check
+        checkHashAndScroll();
+        
+        // Check again after a short delay to ensure everything is loaded
+        setTimeout(checkHashAndScroll, 500);
+
+        const productGrid = document.querySelector('.product-grid');
+        const priceSlider = document.getElementById('price-slider');
+        const minPriceDisplay = document.getElementById('min-price');
+        const maxPriceDisplay = document.getElementById('max-price');
+        const minPriceInput = document.getElementById('min-price-input');
+        const maxPriceInput = document.getElementById('max-price-input');
+        const filterForm = document.getElementById('filter-form');
+
+        // Function to get URL parameters
+        function getUrlParams() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const params = {};
+            for (const [key, value] of urlParams.entries()) {
+                if (key === 'category') {
+                    params[key] = params[key] || [];
+                    params[key].push(value);
+                } else {
+                    params[key] = value;
+                }
+            }
+            return params;
+        }
+
+        // Initialize price slider
+        if (priceSlider) {
+            const params = getUrlParams();
+            const minPrice = params.min_price || 0;
+            const maxPrice = params.max_price || 10000;
+            
+            priceSlider.value = maxPrice;
+            minPriceDisplay.textContent = `₹${minPrice}`;
+            maxPriceDisplay.textContent = `₹${maxPrice}`;
+            minPriceInput.value = minPrice;
+            maxPriceInput.value = maxPrice;
+
+            priceSlider.addEventListener('input', function() {
+                maxPriceDisplay.textContent = `₹${this.value}`;
+                maxPriceInput.value = this.value;
+            });
+        }
+
+        // Initialize category checkboxes
+        const params = getUrlParams();
+        if (params.category) {
+            const categories = Array.isArray(params.category) ? params.category : [params.category];
+            categories.forEach(category => {
+                const checkbox = document.querySelector(`input[name="category"][value="${category}"]`);
+                if (checkbox) checkbox.checked = true;
+            });
+        }
+
+        // Initialize sort select
+        if (params.sort) {
+            const sortSelect = document.querySelector('select[name="sort"]');
+            if (sortSelect) sortSelect.value = params.sort;
+        }
+
+        // Handle form submission
+        if (filterForm) {
+            filterForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Get selected categories
+                const selectedCategories = Array.from(document.querySelectorAll('input[name="category"]:checked'))
+                    .map(checkbox => checkbox.value);
+                
+                // Update URL with selected filters
+                const url = new URL(window.location.href);
+                url.searchParams.delete('category');
+                selectedCategories.forEach(category => {
+                    url.searchParams.append('category', category);
+                });
+                
+                // Add price range
+                url.searchParams.set('min_price', minPriceInput.value);
+                url.searchParams.set('max_price', maxPriceInput.value);
+                
+                // Add sort option
+                const sortValue = document.querySelector('select[name="sort"]').value;
+                url.searchParams.set('sort', sortValue);
+                
+                // Submit the form
+                window.location.href = url.toString();
+            });
+        }
+
+        // Handle pagination with AJAX
+        document.querySelectorAll('.pagination a').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const url = new URL(this.href);
+                const page = url.searchParams.get('page');
+                
+                // Add current filters to pagination URL
+                const currentParams = new URLSearchParams(window.location.search);
+                currentParams.set('page', page);
+                
+                // Update URL without reloading
+                window.history.pushState({}, '', `?${currentParams.toString()}`);
+                
+                // Fetch new page content
+                fetch(`?${currentParams.toString()}`, {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Clear current products
+                    productGrid.innerHTML = '';
+                    
+                    // Add new products
+                    data.products.forEach(product => {
+                        productGrid.appendChild(createProductCard(product));
+                    });
+                    
+                    // Update pagination
+                    updatePagination(data.current_page, data.total_pages);
+                    
+                    // Scroll to top
+                    scrollToProducts();
+                });
+            });
+        });
+
+        function createProductCard(product) {
+            const div = document.createElement('div');
+            div.className = 'product-card bg-white rounded-lg shadow-md overflow-hidden relative';
+            
+            const html = `
+                <a href="/product/${product.id}/" class="block">
+                    ${product.image_url ? 
+                        `<img src="${product.image_url}" alt="${product.name}" class="w-full h-48 object-cover">` :
+                        `<div class="w-full h-48 bg-gray-200 flex items-center justify-center">
+                            <span class="text-gray-500">No Image Available</span>
+                        </div>`
+                    }
+                    <span class="category-badge">${product.category}</span>
+                    <div class="p-4">
+                        <h3 class="font-semibold text-lg mb-1 text-gray-800">${product.name}</h3>
+                        <p class="text-green-600 font-bold text-lg mb-2">₹${product.price}</p>
+                        <p class="text-sm text-gray-500">In Stock: ${product.stock}</p>
+                    </div>
+                </a>
+                <div class="p-4 border-t border-gray-100">
+                    <form action="/add_to_cart/${product.id}/" method="post" class="flex items-center gap-2">
+                        <input type="hidden" name="csrfmiddlewaretoken" value="${document.querySelector('[name=csrfmiddlewaretoken]').value}">
+                        <input type="number" name="quantity" value="1" min="1" max="${product.stock}" 
+                               class="w-16 text-center border rounded-md py-1">
+                        <button type="submit" class="flex-1 bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors">
+                            Add to Cart
+                        </button>
+                    </form>
+                </div>
+            `;
+            
+            div.innerHTML = html;
+            return div;
+        }
+
+        function updatePagination(currentPage, totalPages) {
+            const pagination = document.querySelector('.pagination');
+            if (!pagination) return;
+            
+            let html = '';
+            
+            if (currentPage > 1) {
+                html += `<a href="?page=1" class="page-link">&laquo; First</a>`;
+                html += `<a href="?page=${currentPage - 1}" class="page-link">Previous</a>`;
+            }
+            
+            for (let i = 1; i <= totalPages; i++) {
+                if (i === currentPage) {
+                    html += `<span class="current">${i}</span>`;
+                } else if (i > currentPage - 3 && i < currentPage + 3) {
+                    html += `<a href="?page=${i}" class="page-link">${i}</a>`;
+                }
+            }
+            
+            if (currentPage < totalPages) {
+                html += `<a href="?page=${currentPage + 1}" class="page-link">Next</a>`;
+                html += `<a href="?page=${totalPages}" class="page-link">Last &raquo;</a>`;
+            }
+            
+            pagination.innerHTML = html;
+            
+            // Reattach event listeners to new pagination links
+            document.querySelectorAll('.pagination a').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const url = new URL(this.href);
+                    const page = url.searchParams.get('page');
+                    
+                    // Add current filters to pagination URL
+                    const currentParams = new URLSearchParams(window.location.search);
+                    currentParams.set('page', page);
+                    
+                    // Update URL without reloading
+                    window.history.pushState({}, '', `?${currentParams.toString()}`);
+                    
+                    // Fetch new page content
+                    fetch(`?${currentParams.toString()}`, {
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        // Clear current products
+                        productGrid.innerHTML = '';
+                        
+                        // Add new products
+                        data.products.forEach(product => {
+                            productGrid.appendChild(createProductCard(product));
+                        });
+                        
+                        // Update pagination
+                        updatePagination(data.current_page, data.total_pages);
+                        
+                        // Scroll to top
+                        scrollToProducts();
+                    });
+                });
+            });
+        }
+    });
+</script>
+{% endblock %} 

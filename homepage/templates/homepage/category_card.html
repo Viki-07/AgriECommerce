@@ -1,9 +1,21 @@
 {% load static %}
-<a href="{% url 'category_page' title %}" class="block">
-    <div class="bg-white shadow-md rounded-lg overflow-hidden">
-        <img src="{% static 'assets/' %}{{ image }}" alt="{{ title }}" class="w-full h-32 object-cover">
-        <div class="p-4">
-            <h3 class="text-lg font-semibold">{{ title }}</h3>
+<a href="{% url 'category_page' title %}" class="block group w-48 flex-shrink-0" aria-label="Explore {{ title }} category">
+    <div class="bg-white shadow-lg rounded-lg overflow-hidden transition-transform duration-300 hover:scale-105 hover:shadow-xl h-full">
+        <!-- Category Image -->
+        <div class="w-full h-32 overflow-hidden">
+            <img
+                src="{% static 'assets/' %}{{ image }}"
+                alt="{{ title }}"
+                class="w-full h-full object-cover"
+                loading="lazy"
+            >
+        </div>
+
+        <!-- Rounded Category Title Section -->
+        <div class="bg-green-700 text-white py-2 text-center rounded-b-lg transition-colors duration-300 group-hover:bg-green-800">
+            <h3 class="text-base font-semibold transition-transform duration-300 group-hover:scale-105">
+                {{ title }}
+            </h3>
         </div>
     </div>
 </a>

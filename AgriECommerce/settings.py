@@ -129,3 +129,12 @@ MEDIA_URL = '/media/'
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
 AUTH_USER_MODEL = 'users.CustomUser'
+
+# Razorpay Settings
+# To get your Razorpay API keys:
+# 1. Sign up for a Razorpay account at https://razorpay.com/
+# 2. Go to Dashboard > Settings > API Keys
+# 3. Generate a new API key pair
+# 4. Replace the placeholders below with your actual keys
+RAZORPAY_KEY_ID = 'rzp_test_IEDxdDNznRQxd6'  # Replace with your actual key
+RAZORPAY_KEY_SECRET = 'KpLn0COxWQYS8ulMWS53PsLl'  # Replace with your actual secret

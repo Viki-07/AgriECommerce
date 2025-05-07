@@ -33,13 +33,13 @@
         li a, .dropbtn {
             display: inline-block;
             color: black;
-        {#font-size: 22px;#} text-align: center;
+            text-align: center;
             padding: 14px 16px;
             text-decoration: none;
         }
 
         li a:hover, .dropdown:hover .dropbtn {
-        {#background-color: 254d4d;#}
+            background-color: #254d4d;
         }
 
         .product__header {
@@ -64,9 +64,8 @@
     background-color: #ddd;
 }
 
-
         .view-all-btn {
-            margin-left: 20px; /* Space between heading and button */
+            margin-left: 20px;
             padding: 8px 16px;
             background-color: #28a745;
             color: white;
@@ -82,39 +81,33 @@
 
         li.dropdown {
             position: relative;
-
             display: inline-block;
         }
 
-        /* Container for Profile */
         .profile-container {
-            position: relative; /* Ensures dropdown is positioned relative to profile */
-            z-index: 10; /* Higher z-index to keep it above other elements */
+            position: relative;
+            z-index: 10;
         }
 
-        /* Dropdown Menu */
         .dropdown-content {
             display: none;
             position: absolute;
-            top: 100%; /* Positions below the profile icon */
+            top: 100%;
             left: 0;
             background-color: white;
             min-width: 150px;
             box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-            z-index: 9999; /* Ensures dropdown is above all other elements */
+            z-index: 9999;
         }
 
-        /* Show dropdown on hover */
         .profile-container:hover .dropdown-content {
             display: block;
         }
 
-        /* Image with lower z-index */
         .image-container img {
             position: relative;
-            z-index: 1; /* Keeps it behind dropdown */
+            z-index: 1;
         }
-
 
         .dropdown-content a {
             color: black;
@@ -134,14 +127,8 @@
     </style>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <link
-            href="https://cdn.jsdelivr.net/npm/remixicon@4.3.0/fonts/remixicon.css"
-            rel="stylesheet"
-    />
-    <link
-            rel="stylesheet"
-            href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
-    />
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.3.0/fonts/remixicon.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
     <link rel="stylesheet" href="{% static 'styles.css' %}"/>
     <title>Project | AgriMarket</title>
 </head>
@@ -268,16 +255,16 @@
                 <h3>3.</h3>
                 <h4>How do we help</h4>
                 <p>With step-by-step farming guides, video tutorials, and expert support, we make sure you get the most
-                    out of your land. Whether you’re a beginner or a seasoned farmer, we’re here to assist every step of
+                    out of your land. Whether you're a beginner or a seasoned farmer, we're here to assist every step of
                     the way.</p>
             </div>
             <div class="about__card">
                 <h3>4.</h3>
                 <h4>Your Growth, Our Mission</h4>
                 <p>
-                    Farming is more than just a job—it’s a way of life. By providing high-quality products, practical
+                    Farming is more than just a job—it's a way of life. By providing high-quality products, practical
                     knowledge, and continuous support, we help you turn hard work into a thriving, sustainable future.
-                    Together, let’s grow more and grow better! 🌾💚
+                    Together, let's grow more and grow better! 🌾💚
                 </p>
             </div>
         </div>
@@ -356,9 +343,9 @@
                         <img src="../../static/assets/user1.jpg" alt="user"/>
                         <div>
                             <p>
-                                “This platform has completely changed the way I farm! The high-quality seeds and
+                                "This platform has completely changed the way I farm! The high-quality seeds and
                                 fertilizers have boosted my crop yield, and the 5% cashback on equipment was an added
-                                advantage!”
+                                advantage!"
                             </p>
                             <h4>🚜 Rajesh Kumar</h4>
                             <h5>Chennai</h5>
@@ -370,8 +357,8 @@
                         <img src="../../static/assets/user2.jpg" alt="user"/>
                         <div>
                             <p>
-                                “I’ve been using their organic products for over a year now, and my farm has never been
-                                healthier. The expert advice and top-notch supplies make all the difference!”
+                                "I've been using their organic products for over a year now, and my farm has never been
+                                healthier. The expert advice and top-notch supplies make all the difference!"
                             </p>
                             <h4>👨‍🌾 Priya Sharma – Organic Farmer</h4>
                             <h5>Chhattisgarh</h5>
@@ -392,8 +379,7 @@
                 <a href="#" class="logo">AgriMarket</a>
             </div>
             <p>
-                Join us in transforming your farm with top-quality agricultural products that combine sustainability and
-                productivity seamlessly. 🌱🚜
+                Empowering farmers with quality agricultural products and expert guidance for sustainable farming. 🌱🚜
             </p>
             <ul class="footer__socials">
                 <li>
@@ -403,47 +389,45 @@
                     <a href="#"><i class="ri-twitter-fill"></i></a>
                 </li>
                 <li>
-                    <a href="#"><i class="ri-linkedin-fill"></i></a>
+                    <a href="#"><i class="ri-instagram-fill"></i></a>
                 </li>
                 <li>
-                    <a href="#"><i class="ri-pinterest-fill"></i></a>
+                    <a href="#"><i class="ri-youtube-fill"></i></a>
                 </li>
             </ul>
         </div>
         <div class="footer__col">
-            <h4>Services</h4>
+            <h4>Shop</h4>
             <ul class="footer__links">
-                <li><a href="#">Contact Us</a></li>
-                <li><a href="#">Press</a></li>
-                <li><a href="#">Payrol</a></li>
-                <li><a href="#">Library</a></li>
-                <li><a href="#">Blog</a></li>
-                <li><a href="#">Help Center</a></li>
-            </ul>
-        </div>
-        <div class="footer__col">
-            <h4>Resources</h4>
-            <ul class="footer__links">
-                <li><a href="#">Pricing</a></li>
-                <li><a href="#">FAQs</a></li>
-                <li><a href="#">Contact Support</a></li>
-                <li><a href="#">Privacy Policy</a></li>
-                <li><a href="#">Terms</a></li>
+                <li><a href="{% url 'category_page' 'Seeds' %}">Seeds</a></li>
+                <li><a href="{% url 'category_page' 'Fertilizers' %}">Fertilizers</a></li>
+                <li><a href="{% url 'category_page' 'Farming Tools' %}">Farming Tools</a></li>
+                <li><a href="{% url 'category_page' 'Equipment' %}">Equipment</a></li>
+                <li><a href="{% url 'category_page' 'Organic Products' %}">Organic Products</a></li>
             </ul>
         </div>
         <div class="footer__col">
             <h4>Support</h4>
             <ul class="footer__links">
-                <li><a href="#">Contact</a></li>
-                <li><a href="#">Affiliates</a></li>
-                <li><a href="#">Sitemap</a></li>
-                <li><a href="#">Cancelation Policy</a></li>
-                <li><a href="#">Security</a></li>
+                <li><a href="{% url 'about' %}">About Us</a></li>
+                <li><a href="{% url 'contact' %}">Contact</a></li>
+                <li><a href="#">FAQs</a></li>
+                <li><a href="#">Shipping Policy</a></li>
+                <li><a href="#">Return Policy</a></li>
+            </ul>
+        </div>
+        <div class="footer__col">
+            <h4>Contact Us</h4>
+            <ul class="footer__links">
+                <li><a href="tel:+1234567890"><i class="ri-phone-fill"></i> +1 (234) 567-890</a></li>
+                <li><a href="mailto:info@agrimarket.com"><i class="ri-mail-fill"></i> info@agrimarket.com</a></li>
+                <li><a href="#"><i class="ri-map-pin-fill"></i> 123 Farm Road, Agriculture City</a></li>
+                <li><a href="#"><i class="ri-time-fill"></i> Mon-Sat: 9AM - 6PM</a></li>
             </ul>
         </div>
     </div>
     <div class="footer__bar">
-        Copyright © 2025 AgriMarket. All rights reserved.
+        Copyright © {% now "Y" %} AgriMarket. All rights reserved.
     </div>
 </footer>
 

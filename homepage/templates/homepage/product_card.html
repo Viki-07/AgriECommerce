@@ -1,32 +1,46 @@
-<div class="rounded-lg shadow-md overflow-hidden bg-white hover:shadow-lg transition-shadow duration-300">
-    {% if product.image %}
-        <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-full h-48 object-cover rounded-t-lg">
-    {% else %}
-        <div class="w-full h-48 flex items-center justify-center bg-gray-200 text-gray-500">
-            No Image Available
-        </div>
-    {% endif %}
-
-    <div class="p-4">
-        <h3 class="font-semibold text-lg mb-1 text-gray-800">{{ product.name }}</h3>
-        <p class="text-gray-600 text-sm mb-2">{{ product.category }}</p>
-        <p class="text-green-600 font-bold text-lg">₹{{ product.price|floatformat:2 }}</p>
-
-        {% if product.stock > 0 %}
-            <p class="text-sm text-gray-500">Stock: {{ product.stock }}</p>
+<div class="rounded-lg shadow-md overflow-hidden bg-white hover:shadow-lg transition-shadow duration-300 h-full flex flex-col">
+    <!-- Clickable Card -->
+    <a href="{% url 'product_detail' product.id %}" class="block h-full flex flex-col">
+        {% if product.image %}
+            <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-full h-48 object-cover rounded-t-lg">
         {% else %}
-            <p class="text-red-500 font-bold">Out of Stock</p>
+            <div class="w-full h-48 flex items-center justify-center bg-gray-200 text-gray-500">
+                No Image Available
+            </div>
         {% endif %}
-    </div>
 
+        <div class="p-4 flex-grow">
+            <h3 class="font-semibold text-lg mb-1 text-gray-800">{{ product.name }}</h3>
+            <p class="text-gray-600 text-sm mb-2">{{ product.category }}</p>
+            <p class="text-green-600 font-bold text-lg">₹{{ product.price|floatformat:2 }}</p>
+
+            {% if product.stock > 0 %}
+                <p class="text-sm text-gray-500">Stock: {{ product.stock }}</p>
+            {% else %}
+                <p class="text-red-500 font-bold">Out of Stock</p>
+            {% endif %}
+        </div>
+    </a>
+
+    <!-- Buttons (Outside <a> to remain clickable separately) -->
     <div class="px-4 pb-4 flex items-center gap-2">
         {% if product.stock > 0 %}
-            <a href="{% url 'add_to_cart' product.id %}"
-               class="bg-green-600 text-white text-center py-2 px-4 rounded-md hover:bg-green-700 transition-all flex-1">
-               Add to Cart
-            </a>
-            <input type="number" min="1" max="{{ product.stock }}" value="1"
-                   class="w-16 p-2 border rounded-md text-center flex-none">
+            <form action="{% url 'add_to_cart' product.id %}" method="post" onsubmit="updateQuantityField(this)">
+                {% csrf_token %}
+                <div class="flex items-center gap-2">
+                    <!-- Quantity Controls -->
+                    <button type="button" class="text-xl text-gray-600 border px-3 py-1 rounded-md hover:bg-gray-200 transition-colors" onclick="changeQuantity(this, -1)">-</button>
+                    <input type="number" name="quantity" min="1" max="{{ product.stock }}" value="1"
+                           class="w-16 p-2 border rounded-md text-center flex-none quantity-input">
+                    <button type="button" class="text-xl text-gray-600 border px-3 py-1 rounded-md hover:bg-gray-200 transition-colors" onclick="changeQuantity(this, 1)">+</button>
+
+                    <!-- Add to Cart Button -->
+                    <button type="submit"
+                            class="bg-green-600 text-white text-center py-2 px-4 ml-6 rounded-md hover:bg-green-700 transition-all flex-1">
+                        Add to Cart
+                    </button>
+                </div>
+            </form>
         {% else %}
             <button disabled class="block w-full bg-gray-400 text-white text-center py-2 rounded-md cursor-not-allowed">
                 Out of Stock
@@ -34,3 +48,21 @@
         {% endif %}
     </div>
 </div>
+
+<!-- JavaScript for Quantity Controls -->
+<script>
+    function changeQuantity(button, change) {
+        let input = button.parentElement.querySelector(".quantity-input");
+        let newValue = parseInt(input.value) + change;
+        if (newValue >= 1 && newValue <= {{ product.stock }}) {
+            input.value = newValue;
+        }
+    }
+
+    function updateQuantityField(form) {
+        let quantityInput = form.querySelector(".quantity-input");
+        if (!quantityInput.value) {
+            quantityInput.value = 1;
+        }
+    }
+</script>
