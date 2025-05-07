@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -135,6 +136,6 @@ AUTH_USER_MODEL = 'users.CustomUser'
 # 1. Sign up for a Razorpay account at https://razorpay.com/
 # 2. Go to Dashboard > Settings > API Keys
 # 3. Generate a new API key pair
-# 4. Replace the placeholders below with your actual keys
-RAZORPAY_KEY_ID = 'rzp_test_IEDxdDNznRQxd6'  # Replace with your actual key
-RAZORPAY_KEY_SECRET = 'KpLn0COxWQYS8ulMWS53PsLl'  # Replace with your actual secret
+# 4. Add the keys to your .env file
+RAZORPAY_KEY_ID = os.getenv('RAZORPAY_KEY_ID')
+RAZORPAY_KEY_SECRET = os.getenv('RAZORPAY_KEY_SECRET')

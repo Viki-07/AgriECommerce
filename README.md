@@ -57,30 +57,46 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### 5. Apply Migrations
+### 5. Set Up Environment Variables
+
+Create a `.env` file in the root directory with the following variables:
+
+```bash
+# Razorpay API Keys
+RAZORPAY_KEY_ID=your_razorpay_key_id
+RAZORPAY_KEY_SECRET=your_razorpay_key_secret
+
+# Django Secret Key
+DJANGO_SECRET_KEY=your_secret_key
+
+# Debug Mode
+DEBUG=True
+```
+
+### 6. Apply Migrations
 
 ```bash
 python manage.py makemigrations
 python manage.py migrate
 ```
 
-### 6. Create a Superuser (Admin Account)
+### 7. Create a Superuser (Admin Account)
 
 ```bash
 python manage.py createsuperuser
 ```
 
-### 7. Run the Development Server
+### 8. Run the Development Server
 
 ```bash
 python manage.py runserver
 ```
 
-### 8. Open in Browser
+### 9. Open in Browser
 
 Visit: [http://localhost:8000](http://localhost:8000)
 
-### 9. Access Admin Panel
+### 10. Access Admin Panel
 
 Visit: [http://localhost:8000/admin](http://localhost:8000/admin)  
 Login using the superuser credentials you just created.
