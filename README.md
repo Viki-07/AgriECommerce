@@ -1,23 +1,23 @@
-
 # 🌾 Agri Market
 
-Agri Market is a Django-based e-commerce platform tailored for agricultural products. It connects farmers and consumers, offering features like product browsing, cart management, admin analytics, and a basic ML-powered recommendation system.
+Agri Market is a Django-based e-commerce platform tailored for agricultural products. It connects farmers and consumers, offering features like product browsing, cart management, and admin analytics.
 
 ---
 
 ## 📁 Project Structure
 
 ```
-agri-market/
-├── agri_market/         # Django project settings
-├── products/            # Product models, views, templates
-├── users/               # Authentication and user profile
-├── orders/              # Cart, checkout, order tracking
-├── ML/                  # Recommendation engine
-├── templates/           # HTML templates
-├── static/              # CSS, JS, images
-├── requirements.txt     # Python dependencies
-└── manage.py
+AgriECommerce/
+├── AgriECommerce/      # Django project settings
+├── homepage/           # Homepage app
+├── users/              # Authentication and user profile
+├── templates/          # HTML templates
+├── static/             # CSS, JS, images
+├── media/              # User uploaded files
+├── locale/             # Translation files
+├── requirements.txt    # Python dependencies
+├── manage.py           # Django management script
+└── db.sqlite3          # SQLite database
 ```
 
 ---
@@ -27,14 +27,14 @@ agri-market/
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/your-username/agri-market.git
-cd agri-market
+git clone https://github.com/techg/AgriECommerce.git
+cd AgriECommerce
 ```
 
 ### 2. Create a Virtual Environment
 
 ```bash
-python -m venv env
+python -m venv .venv
 ```
 
 ### 3. Activate the Virtual Environment
@@ -42,13 +42,13 @@ python -m venv env
 - **On Windows:**
 
 ```bash
-env\Scripts\activate
+.venv\Scripts\activate
 ```
 
 - **On macOS/Linux:**
 
 ```bash
-source env/bin/activate
+source .venv/bin/activate
 ```
 
 ### 4. Install Dependencies
@@ -87,9 +87,15 @@ Login using the superuser credentials you just created.
 
 ---
 
-## 🤖 ML Recommendation Engine
+## 🤖 Features
 
-Located in the `ML/` directory, this module uses basic logic to suggest products to users. Future improvements could include collaborative filtering or neural recommendations.
+- User authentication and profile management
+- Product browsing and search
+- Shopping cart functionality
+- Order management
+- Admin dashboard for analytics
+- Multi-language support
+- Responsive design for mobile and desktop
 
 ---
 
